@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-app-prd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front-app-prd
+  template:
+    metadata:
+      labels:
+        app: front-app-prd
+    spec:
+      containers:
+        - name: front-app
+          image: front-app:prd
+          ports:
+            - containerPort: 80

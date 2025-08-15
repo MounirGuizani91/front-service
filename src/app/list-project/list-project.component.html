@@ -1,0 +1,53 @@
+<input
+  #searchInput
+  type="text"
+  placeholder="Rechercher un projet..."
+  [value]="search()"
+  (input)="searchInput.value != null ? search.set(searchInput.value) : search.set('')"
+  class="search-bar"
+/>
+<h2>Liste des projets</h2>
+<table class="table table-striped table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th>Nom</th>
+      <th>Description</th>
+      <th>Date début</th>
+      <th>Date fin</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let project of filteredProjects()">
+      <td>{{ project.nom }}</td>
+      <td>{{ project.description }}</td>
+      <td>{{ project.dateDebut }}</td>
+      <td>{{ project.dateFin }}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" (click)="deleteProject(project.id)">Supprimer</button>
+        <button class="btn btn-warning btn-sm" (click)="updateProject(project.id)">Modifier</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div *ngIf="filteredProjects().length === 0" class="alert alert-info">Aucun projet à afficher.</div>
+<div class="pagination">
+  <button
+    class="btn btn-secondary"
+    [disabled]="page() === 0"
+    (click)="page.set(page() - 1); loadProjects()"
+  >
+    Précédent
+  </button>
+  <span>Page {{ page() + 1 }} / {{ Math.ceil(totalElements() / pageSize()) }}</span>
+  <button
+    class="btn btn-secondary"
+    [disabled]="(page() + 1) * pageSize() >= totalElements()"
+    (click)="page.set(page() + 1); loadProjects()"
+  >
+    Suivant
+  </button>
+</div>
+<div class="mb-3 text-end">
+  <a class="btn btn-success" [routerLink]="['/create']">Créer un projet</a>
+</div>
