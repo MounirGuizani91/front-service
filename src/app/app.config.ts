@@ -11,6 +11,6 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(withFetch()),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration()
-  ]
+    provideClientHydration(),
+  ],
 });

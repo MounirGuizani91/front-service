@@ -1,7 +1,15 @@
+export enum ProjectType {
+  PROFESSIONAL = 'PROFESSIONAL',
+  ACADEMIC = 'ACADEMIC',
+  PERSONAL = 'PERSONAL',
+}
+
 export interface Project {
   id: number;
-  nom: string;
+  name: string;
   description: string;
-  dateDebut: string;
-  dateFin: string;
+  startDate: string;
+  endDate: string;
+  projectType?: ProjectType;
+  missionId?: number;
 }

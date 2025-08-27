@@ -1,6 +1,6 @@
 import { Project } from './project.model';
 
 export interface ProjectPage {
-  projets: Project[];
+  projects: Project[];
   totalElements: number;
 }

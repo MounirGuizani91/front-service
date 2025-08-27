@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+    environment {
+        NODE_OPTIONS = '--max_old_space_size=4096'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Install dependencies') {
+            steps {
+                script {
+                    if (fileExists('package-lock.json')) {
+                        bat 'npm ci'
+                    } else {
+                        bat 'npm install'
+                    }
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                bat 'npm run build -- --configuration=prd'
+            }
+        }
+        stage('Build & Load Docker Image') {
+            steps {
+                script {
+                    def imageTag = "prd-${env.BUILD_NUMBER}"
+                    bat "docker build --no-cache -f  src/acid/prd/Dockerfile.prd -t front-app:${imageTag} ."
+                    bat "minikube image load front-app:${imageTag}"
+                    bat "powershell -Command \"(Get-Content src/acid/prd/deployment.yaml) -replace 'front-app:prd', 'front-app:${imageTag}' | Set-Content src/acid/prd/deployment.yaml\""
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                bat 'kubectl apply -f src/acid/prd/deployment.yaml'
+                bat 'kubectl rollout restart deployment front-app-prd'
+            }
+        }
+        stage('Archive build') {
+            steps {
+                archiveArtifacts artifacts: 'dist/**/*', fingerprint: true
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

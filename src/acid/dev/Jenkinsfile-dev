@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    environment {
+        NODE_OPTIONS = '--max_old_space_size=4096'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Install dependencies') {
+            steps {
+                script {
+                    if (fileExists('package-lock.json')) {
+                        bat 'npm ci'
+                    } else {
+                        bat 'npm install'
+                    }
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                bat 'if exist dist rmdir /s /q dist'
+                bat 'npm run build -- --output-path=dist --configuration=dev'
+            }
+        }
+        stage('Build & Load Docker Image') {
+            steps {
+                script {
+                    def imageTag = "dev-${env.BUILD_NUMBER}"
+                    bat "docker build --no-cache -f  src/acid/dev/Dockerfile.dev -t front-app:${imageTag} ."
+                    bat "minikube image load front-app:${imageTag}"
+                    bat "powershell -Command \"(Get-Content src/acid/dev/deployment.yaml) -replace 'front-app:dev', 'front-app:${imageTag}' | Set-Content src/acid/dev/deployment.yaml\""
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                bat 'kubectl apply -f src/acid/dev/deployment.yaml'
+                bat 'kubectl rollout restart deployment front-app-dev'
+            }
+        }
+        stage('Archive build') {
+            steps {
+                archiveArtifacts artifacts: 'dist/**/*', fingerprint: true
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

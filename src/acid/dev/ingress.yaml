@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: front-app-ingress-dev
+  namespace: dev
 spec:
   rules:
     - host: front-app-dev

@@ -1,0 +1,50 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold mb-0">Academic Level list</h2>
+    <div class="search-bar-mat ms-3">
+      <input
+        #searchInput
+        type="text"
+        placeholder="Search ..."
+        [value]="search()"
+        (input)="searchInput.value != null ? search.set(searchInput.value) : search.set('')"
+        class="form-control rounded-pill shadow-sm"
+        style="min-width: 220px"
+      />
+    </div>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-4" *ngFor="let academicLevel of filteredAcademicLevels()">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title card-title-color">{{ academicLevel.name }}</h5>
+          <p class="card-text"><strong>School:</strong> {{ academicLevel.school }}</p>
+          <p class="mb-1"><strong>Country:</strong> {{ academicLevel.country }}</p>
+          <p class="mb-1"><strong>Type:</strong> {{ academicLevel.levelType }}</p>
+          <p><strong>Description:</strong> {{ academicLevel.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="filteredAcademicLevels().length === 0" class="empty-projects-message">
+    <i class="bi bi-folder-x" style="font-size: 2rem; margin-bottom: 8px"></i>
+    <span>No academic level to display.</span>
+  </div>
+  <div class="pagination-container d-flex align-items-center justify-content-center gap-3 mt-4">
+    <button
+      class="btn btn-secondary"
+      [disabled]="page() === 0"
+      (click)="page.set(page() - 1); loadAcademicLevels()"
+    >
+      Previous
+    </button>
+    <span>Page {{ page() + 1 }} / {{ Math.ceil(totalElements() / pageSize()) }}</span>
+    <button
+      class="btn btn-secondary"
+      [disabled]="(page() + 1) * pageSize() >= totalElements()"
+      (click)="page.set(page() + 1); loadAcademicLevels()"
+    >
+      Next
+    </button>
+  </div>
+</div>

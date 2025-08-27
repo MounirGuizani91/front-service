@@ -1,9 +1,8 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProjectService } from '../../project.service';
-import { Project } from '../model/project.model';
-import { Router, RouterModule } from '@angular/router';
-import { tap } from 'rxjs/operators';
+import { ProjectService } from '../service/project.service';
+import { Project, ProjectType } from '../model/project.model';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProjectPage } from '../model/project-page.model';
 
 @Component({
@@ -11,74 +10,73 @@ import { ProjectPage } from '../model/project-page.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './list-project.component.html',
-  styleUrl: './list-project.component.scss',
+  styleUrls: ['./list-project.component.scss'],
 })
 export class ListProjectComponent implements OnInit {
   projects = signal<Project[]>([]);
+  route: ActivatedRoute = inject(ActivatedRoute);
+  selectedType: ProjectType | undefined;
 
-  // Angular 16+ inject() function for dependency injection
   projectService = inject(ProjectService);
 
-  search = signal(''); // <-- Ajout du signal de recherche
-
+  search = signal('');
   router = inject(Router);
+  page = signal(0);
+  pageSize = signal(6);
+  totalElements = signal(0);
+  Math = Math;
 
-  /* Avant la pagination
   ngOnInit(): void {
-    this.projectService
-      .getAll()
-      .pipe(tap((data) => console.log('Projets reçus (tap):', data)))
-      .subscribe({
-        next: (data) => {
-          this.projects.set(data);
-        },
-        error: (err) => console.error('Erreur lors du chargement des projets', err),
-      });
-  } */
+    this.route.paramMap.subscribe((params) => {
+      const type = params.get('type') as ProjectType;
+      this.selectedType = type;
+      this.loadProjects();
+    });
+  }
+
+  loadProjects() {
+    this.projectService.getAll().subscribe({
+      next: (projects: Project[]) => {
+        let filtered = projects;
+        if (this.selectedType) {
+          filtered = filtered.filter((p) => p.projectType === this.selectedType);
+        }
+        this.projects.set(filtered);
+        this.totalElements.set(filtered.length);
+      },
+      error: (err) => console.error('Error loading projects', err),
+    });
+  }
+
+  filteredProjects = computed(() => {
+    const searchValue = this.search().toLowerCase();
+    const filtered = this.projects().filter((p) => {
+      return (
+        p.name.toLowerCase().includes(searchValue) ||
+        p.description?.toLowerCase().includes(searchValue) ||
+        (p.startDate && p.startDate.toString().toLowerCase().includes(searchValue)) ||
+        (p.endDate && p.endDate.toString().toLowerCase().includes(searchValue)) ||
+        (p.projectType && p.projectType.toLowerCase().includes(searchValue))
+      );
+    });
+    // Pagination after filtering
+    const start = this.page() * this.pageSize();
+    return filtered.slice(start, start + this.pageSize());
+  });
 
   deleteProject(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer ce projet ?')) {
+    if (confirm('Do you really want to delete this project?')) {
       this.projectService.delete(id).subscribe({
         next: () => {
           this.projects.set(this.projects().filter((p) => p.id !== id));
+          this.totalElements.set(this.projects().length);
         },
-        error: (err) => alert('Erreur lors de la suppression du projet'),
+        error: (err) => alert('Error deleting project'),
       });
     }
   }
 
   updateProject(id: number) {
-    this.router.navigate(['/create', id]);
-  }
-  // Computed property to filter projects based on search input
-  filteredProjects = computed(() =>
-    this.projects().filter((p) => {
-      const searchValue = this.search().toLowerCase();
-      return (
-        p.nom.toLowerCase().includes(searchValue) ||
-        p.description?.toLowerCase().includes(searchValue) ||
-        (p.dateDebut && p.dateDebut.toString().toLowerCase().includes(searchValue)) ||
-        (p.dateFin && p.dateFin.toString().toLowerCase().includes(searchValue))
-      );
-    }),
-  );
-
-  page = signal(0);
-  pageSize = signal(5);
-  totalElements = signal(0);
-
-  loadProjects() {
-    this.projectService.getAllPaged(this.page(), this.pageSize()).subscribe({
-      next: (res: ProjectPage) => {
-        this.projects.set(res.projets);
-        this.totalElements.set(res.totalElements);
-      },
-      error: (err) => console.error('Erreur lors du chargement des projets', err),
-    });
-  }
-
-  public Math = Math;
-  ngOnInit(): void {
-    this.loadProjects();
+    this.router.navigate(['/projects/update', id]);
   }
 }
