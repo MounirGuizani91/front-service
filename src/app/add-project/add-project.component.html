@@ -1,0 +1,127 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    @if (action === 'update') {
+      <h2 class="fw-bold mb-0">Update project</h2>
+    } @else {
+      <h2 class="fw-bold mb-0">Add a project</h2>
+    }
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label card-title-color">Name</label>
+              <input
+                class="form-control"
+                formControlName="name"
+                required
+                placeholder="Project name"
+              />
+              <div
+                *ngIf="projectForm.get('name')?.invalid && projectForm.get('name')?.touched"
+                class="text-danger"
+              >
+                Name is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">Description</label>
+              <textarea
+                class="form-control"
+                formControlName="description"
+                required
+                placeholder="Project description"
+              ></textarea>
+              <div
+                *ngIf="
+                  projectForm.get('description')?.invalid && projectForm.get('description')?.touched
+                "
+                class="text-danger"
+              >
+                Description is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">Start date</label>
+              <input
+                class="form-control"
+                type="date"
+                formControlName="startDate"
+                required
+                placeholder="Start date"
+              />
+              <div
+                *ngIf="
+                  projectForm.get('startDate')?.invalid && projectForm.get('startDate')?.touched
+                "
+                class="text-danger"
+              >
+                Start date is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">End date</label>
+              <input
+                class="form-control"
+                type="date"
+                formControlName="endDate"
+                required
+                placeholder="End date"
+              />
+              <div
+                *ngIf="projectForm.get('endDate')?.invalid && projectForm.get('endDate')?.touched"
+                class="text-danger"
+              >
+                End date is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">Project type</label>
+              <select class="form-control" formControlName="projectType" required>
+                <option value="" disabled selected>Select a type</option>
+                <option *ngFor="let type of projectTypes" [value]="type">{{ type }}</option>
+              </select>
+              <div
+                *ngIf="
+                  projectForm.get('projectType')?.invalid && projectForm.get('projectType')?.touched
+                "
+                class="text-danger"
+              >
+                Project type is required.
+              </div>
+            </div>
+            @if (projectForm.value.projectType === 'PROFESSIONAL') {
+              <div class="mb-3">
+                <label class="form-label card-title-color">Project type</label>
+                <select class="form-control" formControlName="missionId" required>
+                  <option value="" disabled selected>Select a mission</option>
+                  <option *ngFor="let mission of missions" [value]="mission.id">
+                    {{ mission.name }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="projectForm.get('mission')?.invalid && projectForm.get('mission')?.touched"
+                  class="text-danger"
+                >
+                  Mission is required
+                </div>
+              </div>
+            }
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-warning btn-sm" type="submit" [disabled]="projectForm.invalid">
+                @if (action === 'update') {
+                  <i class="bi bi-pencil"></i> Update project
+                } @else {
+                  <i class="bi bi-plus"></i> Add project
+                }
+              </button>
+            </div>
+          </form>
+          <div *ngIf="message" class="alert alert-info mt-3">{{ message }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

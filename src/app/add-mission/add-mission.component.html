@@ -1,0 +1,105 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold mb-0">Add Mission</h2>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <form [formGroup]="missionForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label card-title-color">Mission Name</label>
+              <input
+                class="form-control"
+                formControlName="name"
+                required
+                placeholder="Mission name"
+              />
+              <div
+                *ngIf="missionForm.get('name')?.invalid && missionForm.get('name')?.touched"
+                class="text-danger"
+              >
+                Mission name is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">Responsibility</label>
+              <input
+                class="form-control"
+                formControlName="responsibility"
+                required
+                placeholder="Responsibility"
+              />
+              <div
+                *ngIf="
+                  missionForm.get('responsibility')?.invalid &&
+                  missionForm.get('responsibility')?.touched
+                "
+                class="text-danger"
+              >
+                Responsibility is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">Start Date</label>
+              <input
+                class="form-control"
+                type="date"
+                formControlName="startDate"
+                required
+                placeholder="Start date"
+              />
+              <div
+                *ngIf="
+                  missionForm.get('startDate')?.invalid && missionForm.get('startDate')?.touched
+                "
+                class="text-danger"
+              >
+                Start date is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">End Date</label>
+              <input
+                class="form-control"
+                type="date"
+                formControlName="endDate"
+                required
+                placeholder="End date"
+              />
+              <div
+                *ngIf="missionForm.get('endDate')?.invalid && missionForm.get('endDate')?.touched"
+                class="text-danger"
+              >
+                End date is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label card-title-color">Client Name</label>
+              <input
+                class="form-control"
+                formControlName="clientName"
+                required
+                placeholder="Client name"
+              />
+              <div
+                *ngIf="
+                  missionForm.get('clientName')?.invalid && missionForm.get('clientName')?.touched
+                "
+                class="text-danger"
+              >
+                Client name is required.
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-warning btn-sm" type="submit" [disabled]="missionForm.invalid">
+                <i class="bi bi-plus"></i> Add Mission
+              </button>
+            </div>
+          </form>
+          <div *ngIf="message" class="alert alert-info mt-3">{{ message }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

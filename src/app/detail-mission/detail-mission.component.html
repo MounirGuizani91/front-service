@@ -1,0 +1,34 @@
+<div class="list-intro">
+  <div *ngIf="mission; else loading" class="card">
+    <div class="card-body">
+      <h2 class="card-title card-title-color">{{ mission.clientName }} - {{ mission.name }}</h2>
+      <br />
+      <div
+        *ngIf="mission.projects?.length"
+        class="d-flex flex-column align-items-center justify-content-center"
+      >
+        <ul>
+          <div
+            *ngFor="let project of mission.projects"
+            class="project-card mb-3 p-3 w-100"
+            style="max-width: 600px"
+          >
+            <div>
+              <h5 class="card-title card-title-color">Project - {{ project.name }}</h5>
+              <p><strong>Description:</strong> {{ project.description }}</p>
+              <p><strong>Type:</strong> {{ project.projectType }}</p>
+              <p><strong>Start Date:</strong> {{ project.startDate | date: 'mediumDate' }}</p>
+              <p><strong>End Date:</strong> {{ project.endDate | date: 'mediumDate' }}</p>
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-outline-danger" routerLink="/missions">Back</button>
+    </div>
+  </div>
+  <ng-template #loading>
+    <div class="alert alert-info">Loading mission details...</div>
+  </ng-template>
+</div>
