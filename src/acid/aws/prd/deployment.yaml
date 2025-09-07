@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-app-prd
+  namespace: prd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front-app-prd
+  template:
+    metadata:
+      labels:
+        app: front-app-prd
+    spec:
+      containers:
+        - name: front-app
+          image: 258215413901.dkr.ecr.eu-north-1.amazonaws.com/front-app:prd
+          ports:
+            - containerPort: 80

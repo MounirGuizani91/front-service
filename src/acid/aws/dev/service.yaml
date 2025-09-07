@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-app-service-dev
+  namespace: dev
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-subnets: 'subnet-08cc144e92018e783,subnet-04b5c20d2e5ed0edb,subnet-0cc99e89253c453e4'
+spec:
+  type: LoadBalancer
+  selector:
+    app: front-app-dev
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
